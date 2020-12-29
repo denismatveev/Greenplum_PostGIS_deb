@@ -1,0 +1,9 @@
+Package: greenplum-postgis
+Version: 2.1.5
+Section: database
+License: GPLv2
+Priority: optional
+Architecture: amd64
+Depends: greenplum-db-6 ( >=6.13 ), gdal ( >=2.2.3 ), gdal-data ( >= 2.2.3 ), gdal-bin ( >=2.2.3 ), expat ( >=2.2.5 ), libexpat1 ( >=2.2.5 ), libjson-c ( >=0.12.1 ), geos ( >=3.6.2 ), libgeos++ ( >=3.6.2 ), proj ( >=4.9.3 ),  libproj ( >=4.9.3 ), libcunit1( >=2.1-3 )
+Maintainer: Denis Matveev<denis.matveev@ignitia.se>
+Description: Geospatial extensions for Greenplum Database
