@@ -8,8 +8,9 @@ include ../Makefile.version
 POSTGIS_DIR=$(shell cd ../build/postgis-$(POSTGIS_VER) && pwd)
 # for so files should be used $(GPHOME)/glib
 ARCH=$(shell arch)
-POSTGIS_DEB=postgis-$(POSTGIS_VER)-$(POSTGIS_REL).$(ARCH).deb
+POSTGIS_DEB=greenplum-db-6-postgis-$(POSTGIS_VER)-$(POSTGIS_REL).$(ARCH).deb
 # Targets
+all: deb 
 prepare:
 	mkdir -p buildroot/$(GPHOME)/bin
 	cp /root/geospatial/postgis/build/postgis-2.5.4/loader/.libs/* buildroot/$(GPHOME)/bin
@@ -44,8 +45,7 @@ deb: prepare $(POSTGIS_DEB)
 clean:
 	rm -rf buildroot/* && rm -f $(POSTGIS_DEB) 
 
-all: deb 
 
-.PHONY: clean prepare
+.PHONY: clean prepare all
 
 endif
