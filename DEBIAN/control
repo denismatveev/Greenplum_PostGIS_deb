@@ -1,4 +1,4 @@
-Package: greenplum-postgis
+Package: greenplum-db-6-postgis
 Version: 2.5.4
 Section: database
 License: GPLv2
