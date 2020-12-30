@@ -1,1 +1,1 @@
-Documentation available at https://devtalk.ignitia.se/d/22-greenplum-installation-step-by-step
+#### Documentation available [here](http://https://devtalk.ignitia.se/d/22-greenplum-installation-step-by-step "here")
