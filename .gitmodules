@@ -1,0 +1,3 @@
+[submodule "greenplum-db-6-postgis"]
+	path = greenplum-db-6-postgis
+	url = https://github.com/greenplum-db/geospatial.git
