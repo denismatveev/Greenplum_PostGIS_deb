@@ -1,3 +1,0 @@
-[submodule "geospatial"]
-	path = geospatial
-	url = https://github.com/greenplum-db/geospatial.git
