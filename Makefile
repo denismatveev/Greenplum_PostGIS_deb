@@ -49,7 +49,7 @@ $(POSTGIS_DEB):
 deb: prepare $(POSTGIS_DEB)
 clean:
 	rm -rf buildroot/* && rm -f $(POSTGIS_DEB) 
-	make -C greenplum-db-6-postgis/geospatial/postgis/build/postgis-2.5.4/ clean
+	make -C $(POSTGIS_DIR) clean
 
 
 .PHONY: clean prepare build all
