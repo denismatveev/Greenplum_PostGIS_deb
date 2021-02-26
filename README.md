@@ -1,6 +1,3 @@
-
-The manual below is telling about how to install greenplum on three segments and one master with no redundancy.
-
 ### Installing Postgresql extensions
 **1. PostGIS**
 PostGIS packages are built for CentOS/RHEL only.
