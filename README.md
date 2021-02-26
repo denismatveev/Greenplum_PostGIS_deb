@@ -16,7 +16,7 @@ clone sources from:
 ```shell
 # git clone --recursive https://github.com/denismatveev/Greenplum_PostGIS_deb.git .
 ```
-The repository above has git submodule and cloning `GP_PostGIS_deb.git` repository will bring PostGIS repository too(repository in submodule is cloning only that commit which was at creating moment).
+The repository above has git submodule and cloning `Greenplum_PostGIS_deb.git` repository will bring PostGIS repository too(repository in submodule is cloning only that commit which was at creating moment).
 
 Since postgis-2.5.4 cannot be built by gcc-7 and later, it is supposed to modify one source file ```postgis/build/postgis-2.5.4/raster/rt_pg/rtpg_mapalgebra.c``` in 937 line:
 replace the piece
