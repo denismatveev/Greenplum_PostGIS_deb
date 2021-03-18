@@ -131,7 +131,7 @@ Moreover, if your deb package has dependencies the
 ```
 # dpkg -i <package>
 ```
-cannot resolve dependencies of the package. If the deb package depends of other software, you should resolve them after unsuccessful installation, running the following:
+cannot resolve dependencies of the package. If the deb package depends on other software, you should resolve them after unsuccessful installation, running the following:
 ```
 # apt-get -f install
 ```
