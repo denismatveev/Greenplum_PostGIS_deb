@@ -112,11 +112,11 @@ Export postgres and greenplum specific environmental variables:
  
  Source the 
  
- ```
+```
 # source /opt/greenplum-db-6-6.13.0/greenplum_path.sh
 ```
 
-gppkg format implies installing into chroot(for greenplum it is GPHOME that is /opt/greenplum-<version>). Learning sources, I realized, from 
+gppkg format implies installing into chroot(for greenplum it is GPHOME that is `/opt/greenplum-<version>`). Learning sources, I realized, from 
 
 ```
 # vi /opt/greenplum-db-6-6.13.0/lib/python/gppylib/operations/package.py +861
@@ -137,12 +137,12 @@ launches the command like
 # fakeroot dpkg --force-not-root  --log=/dev/null --admindir="$GPHOME"/.tmp/ --instdir="$GPHOME" -i <package.deb>
 ```
 
-which means a package will be installed into *instdir* directory and for storing information about installed packages will be used *admindir*(like /var/lib/dpkg in normal installation). From man follows that for installing into *instdir* is used chroot. So it is irrelevant if your package doesn't have any scripts inside like postinst or postrm.
+which means a package will be installed into *instdir* directory and for storing information about installed packages will be used *admindir* (like `/var/lib/dpkg` in normal installation). From man follows that for installing into *instdir* is used chroot. So it is irrelevant if your package doesn't have any scripts inside like postinst or postrm.
 If you are going to install deb package contains postinst, postrm etc scrtips, this will not work, because for chrooting it should have at least an interpreter for launching scripts (bash or sh etc).
 
 Yes, there is an approach to install bash and minimal system into a specific directory and then chrooting there. Such approach is useful for many cases such as installing a system for a virtual machine(debootstrap). I consider it is not a suitable process for installing packages especially installing on all nodes in a cluster. 
 
-By the way, since gppkg installs a deb pacakge into a specific directory as a root, deb package should contain directories tree relatively installing directory as root("/").
+By the way, since gppkg installs a deb pacakge into a specific directory as a root, deb package should contain directories tree relatively installing directory as root(`/`).
 For this reason, the approach when the deb package is installed into the system packages database is more suitable at the moment because it does not require modifying greenplum sources. 
 
 **c. gppkg dependencies**
