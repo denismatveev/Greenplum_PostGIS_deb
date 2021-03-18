@@ -83,7 +83,7 @@ The fastest way to do that is to use the following command:
 Then ensure the database to be restarted: ```gpadmin@master:~$ gpstop -ra```
 For more information, please read official [documentation](https://github.com/greenplum-db/geospatial)
 
-### A few notes regarding gppkg file format and installation process**
+### A few notes regarding gppkg file format and installation process
 
 gppkg is a format of greenplum packages ready to install. It implies fast installing on all nodes by one command on the master. These files are an archive of preliminarily built OS-specific packages. It can be rpm or deb. Now officially they support rpm packages only. It means if you use Debian-based Linux, you should build from sources.
 
@@ -100,6 +100,22 @@ For Debian, it has some features.
 
 **b. gppkg installation process description**
 
+Before installing gppkg you shoud perform some preparations.
+
+Export postgres and greenplum specific environmental variables:
+ ```
+ # export MASTER_DATA_DIRECTORY=/data/master/gpseg-1
+ # export PGUSER=gpadmin
+ # export PGDATABASE=postgres
+ # export PGHOST=127.0.0.1
+ ```
+ 
+ Source the 
+ 
+ ```
+# source /opt/greenplum-db-6-6.13.0/greenplum_path.sh
+```
+
 gppkg format implies installing into chroot(for greenplum it is GPHOME that is /opt/greenplum-<version>). Learning sources, I realized, from 
 
 ```
@@ -109,14 +125,19 @@ that
 ```
  gppkg -i postgis-ossv2.5.4+pivotal.3_pv2.5_gpdb6.0-debian-amd64.gppkg
 ```
+copying deb package into
+```
+"$GPHOME"/.tmp/
+```
+and 
 
-launches the command  
+launches the command like
 
 ```
-# fakeroot dpkg --force-not-root  --log=/dev/null --admindir=%s --instdir=%s -i %s
+# fakeroot dpkg --force-not-root  --log=/dev/null --admindir="$GPHOME"/.tmp/ --instdir="$GPHOME" -i <package.deb>
 ```
 
-which means a package will be installed into //instdir// directory and for storing information about installed packages will be used //admindir//(like /var/lib/dpkg in normal installation). From man follows that for installing into //instdir// is used chroot. So it is irrelevant if your package doesn't have any scripts inside like postinst or postrm.
+which means a package will be installed into *instdir* directory and for storing information about installed packages will be used *admindir*(like /var/lib/dpkg in normal installation). From man follows that for installing into *instdir* is used chroot. So it is irrelevant if your package doesn't have any scripts inside like postinst or postrm.
 If you are going to install deb package contains postinst, postrm etc scrtips, this will not work, because for chrooting it should have at least an interpreter for launching scripts (bash or sh etc).
 
 Yes, there is an approach to install bash and minimal system into a specific directory and then chrooting there. Such approach is useful for many cases such as installing a system for a virtual machine(debootstrap). I consider it is not a suitable process for installing packages especially installing on all nodes in a cluster. 
@@ -136,3 +157,19 @@ cannot resolve dependencies of the package. If the deb package depends on other 
 # apt-get -f install
 ```
 The command above will install all packages necessary for the deb and then will install the deb package itself.
+
+Modify `/opt/greenplum-db-6-6.13.0/greenplum_path.sh` as said above on all nodes. 
+**Disclaimer**
+I am not sure if the deb package has Half-inst status on the master, this package will appear on all nodes at the same status. Most likely, nodes will not have such package.
+
+**d. Remove the deb package**
+
+To remove half installed deb package(since it is impossibe to remove using `gppkg --remove` command)
+Use the following:
+
+```
+# dpkg --admindir=/opt/greenplum-db-6-6.13.0/share/packages/database/deb  --remove --force-remove-reinstreq greenplum-db-6-postgis
+# rm /opt/greenplum-db-6-6.13.0/.tmp/ -rf
+```
+
+The latter command will remove copied deb package.
