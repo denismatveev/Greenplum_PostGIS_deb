@@ -98,7 +98,7 @@ you will get the package named like **postgis-ossv2.5.4+pivotal.3_pv2.5_gpdb6.0-
 
 For Debian, it has some features.
 
-**b. gppkg installation process description **
+**b. gppkg installation process description**
 
 gppkg format implies installing into chroot(for greenplum it is GPHOME that is /opt/greenplum-<version>). Learning sources, I realized, from 
 
@@ -124,7 +124,7 @@ Yes, there is an approach to install bash and minimal system into a specific dir
 By the way, since gppkg installs a deb pacakge into a specific directory as a root, deb package should contain directories tree relatively installing directory as root("/").
 For this reason, the approach when the deb package is installed into the system packages database is more suitable at the moment because it does not require modifying greenplum sources. 
 
-**c. gppkg dependencies **
+**c. gppkg dependencies**
 
 Moreover, if your deb package has dependencies the
 
