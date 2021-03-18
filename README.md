@@ -1,16 +1,18 @@
 ### Installing Postgresql extensions
+
 **1. PostGIS**
+
 PostGIS packages are built for CentOS/RHEL only.
 For Ubuntu (and for others) PostGIS should be built from source. Specific sources available at [https://github.com/greenplum-db/geospatial](https://github.com/greenplum-db/geospatial)
 
 To compile PostGIS do the following(assuming all actions under root):
 
-**a. install necessary additional packages:**
+**a. Install necessary additional packages:**
 ```shell
 # apt-get install autoconf automake libtool gdal gdal-data expat libexpat1 libjson-c-dev geos-devel \
 proj-devel libgeos++-dev libproj-dev libcunit1-dev libcunit1-doc gdal-bin libgdal-dev xsltproc docbook-xsl docbook-mathml libxslt1-dev libxslt1
 ```
-**b. clone postgis sources prepared special for greenplum:**
+**b. Clone postgis sources prepared special for greenplum:**
 
 clone sources from:
 ```shell
@@ -34,10 +36,11 @@ break;
 
 **c. Build a deb package:**
 ```shell
-# make
+# make deb
 ```
 You'll see the file ```greenplum-db-6-postgis-2.5.4-1.x86_64.deb```
 Then copy the file from buildhost to the master node.
+
 **d. Copy the file from masternode among all nodes:**
 Before copying do the executables from greenplum availabe (source that .bashrc which contains this)
 ```shell
@@ -47,7 +50,7 @@ Before copying do the executables from greenplum availabe (source that .bashrc w
 ```shell
 # gpssh -f cluster_hostlist 'dpkg -i greenplum-db-6-postgis-2.5.4-1.x86_64.deb; apt-get -y -f install
 ```
-If you want ti check:
+If you want to check:
 ```shell
 gpssh -f cluster_hostlist -e  'dpkg -l | grep greenplum'
 ```
@@ -57,10 +60,10 @@ gpssh -f cluster_hostlist -e  'dpkg -l | grep greenplum'
 $ gpstop -ra
 ```
 **g. Check if the Greenplum has postGIS extension:**
+
 Connect to any database you want to create extension. Then type the following:
 ```
 database=# CREATE EXTENSION postgis ;
-
 database# CREATE EXTENSION postgis; -- enables postgis and raster
 database# CREATE EXTENSION fuzzystrmatch; -- required for installing tiger geocoder
 database# CREATE EXTENSION postgis_tiger_geocoder; -- enables tiger geocoder
@@ -77,5 +80,59 @@ The fastest way to do that is to use the following command:
 ```
 # gpssh -f cluster_hostlist -e  'echo -en "export GDAL_DATA=\$GPHOME/share/gdal\nexport POSTGIS_ENABLE_OUTDB_RASTERS=0\nexport POSTGIS_GDAL_ENABLED_DRIVERS=DISABLE_ALL\n" >> /opt/greenplum-db-6-6.13.0/greenplum_path.sh'
 ```
-Then ensure the database to be restarted: ```gpadmin@master01:~$ gpstop -ra```
+Then ensure the database to be restarted: ```gpadmin@master:~$ gpstop -ra```
 For more information, please read official [documentation](https://github.com/greenplum-db/geospatial)
+
+### A few notes regarding gppkg file format and installation process**
+
+gppkg is a format of greenplum packages ready to install. It implies fast installing on all nodes by one command on the master. These files are an archive of preliminarily built OS-specific packages. It can be rpm or deb. Now officially they support rpm packages only. It means if you use Debian-based Linux, you should build from sources.
+
+**a. Build a gppkg package**
+
+To build postgis gppkg package, type the following command in a terminal:
+
+```
+# make
+```
+you will get the package named like **postgis-ossv2.5.4+pivotal.3_pv2.5_gpdb6.0-debian-amd64.gppkg**
+
+For Debian, it has some features.
+
+**b. gppkg installation process description **
+
+gppkg format implies installing into chroot(for greenplum it is GPHOME that is /opt/greenplum-<version>). Learning sources, I realized, from 
+
+```
+# vi /opt/greenplum-db-6-6.13.0/lib/python/gppylib/operations/package.py +861
+```
+that
+```
+ gppkg -i postgis-ossv2.5.4+pivotal.3_pv2.5_gpdb6.0-debian-amd64.gppkg
+```
+
+launches the command  
+
+```
+# fakeroot dpkg --force-not-root  --log=/dev/null --admindir=%s --instdir=%s -i %s
+```
+
+which means a package will be installed into //instdir// directory and for storing information about installed packages will be used //admindir//(like /var/lib/dpkg in normal installation). From man follows that for installing into //instdir// is used chroot. So it is irrelevant if your package doesn't have any scripts inside like postinst or postrm.
+If you are going to install deb package contains postinst, postrm etc scrtips, this will not work, because for chrooting it should have at least an interpreter for launching scripts (bash or sh etc).
+
+Yes, there is an approach to install bash and minimal system into a specific directory and then chrooting there. Such approach is useful for many cases such as installing a system for a virtual machine(debootstrap). I consider it is not a suitable process for installing packages especially installing on all nodes in a cluster. 
+
+By the way, since gppkg installs a deb pacakge into a specific directory as a root, deb package should contain directories tree relatively installing directory as root("/").
+For this reason, the approach when the deb package is installed into the system packages database is more suitable at the moment because it does not require modifying greenplum sources. 
+
+**c. gppkg dependencies **
+
+Moreover, if your deb package has dependencies the
+
+```
+# dpkg -i <package>
+```
+cannot resolve dependencies of the package. If the deb package depends of other software, you should resolve them after unsuccessful installation, running the following:
+```
+# apt-get -f install
+```
+The command above will install all packages necessary for the deb and then will install the deb package itself.
