@@ -41,8 +41,15 @@ break;
 You'll see the file ```greenplum-db-6-postgis-2.5.4-1.x86_64.deb```
 Then copy the file from buildhost to the master node.
 
-**d. Copy the file from masternode among all nodes:**
-Before copying do the executables from greenplum availabe (source that .bashrc which contains this)
+**d. Copy the file from masternode among all nodes**
+
+Before copying make available the greenplum executables:
+
+```
+source /home/gpadmin/.bashrc
+```
+And run copying:
+
 ```shell
 # gpscp -v -f cluster_hostlist  ../greenplum-db-6-postgis-2.5.4-1.x86_64.deb =:~/
 ```
