@@ -165,8 +165,10 @@ cannot resolve dependencies of the package. If the deb package depends on other 
 ```
 The command above will install all packages necessary for the deb and then will install the deb package itself.
 
-Modify `/opt/greenplum-db-6-6.13.0/greenplum_path.sh` as said above on all nodes. 
+Modify `/opt/greenplum-db-6-6.13.0/greenplum_path.sh` as said above on all nodes.
+
 **Disclaimer**
+
 I am not sure if the deb package has Half-inst status on the master, this package will appear on all nodes at the same status. Most likely, nodes will not have such package.
 
 **d. Remove the deb package**
